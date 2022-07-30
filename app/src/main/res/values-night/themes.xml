@@ -1,0 +1,44 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <style name="splash_screen" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="android:windowBackground">@drawable/splash_screen</item>
+        <item name="android:statusBarColor">@color/l_pink</item>
+        <item name="android:forceDarkAllowed" tools:targetApi="q">false</item>
+    </style>
+
+    <attr name="themeColor" format="color"/>
+
+    <attr name="dialogTextColor" format="color"/>
+    <attr name="dialogBtnBackground" format="color"/>
+
+    //for dialog
+    <style name="alertDialog" parent="@style/ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+        <item name="android:background">@color/white</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textColorPrimary">@color/black</item>
+        <item name="android:colorControlNormal">@color/black</item>
+        <item name="android:colorControlActivated">@color/black</item>
+        <item name="android:textColorAlertDialogListItem">@color/black</item>
+    </style>
+
+    //for TextInputLayout
+    <style name="TextInputLayoutStyle" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
+        <item name="boxStrokeColor">@color/black</item>
+        <item name="boxStrokeWidth">2dp</item>
+    </style>
+
+    <!-- Base application theme. -->
+    <style name="Theme.JinglePlayer" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <!-- Primary brand color. -->
+    <item name="colorPrimary">@color/colorPrimary</item>
+    <item name="colorPrimaryVariant">@color/colorPrimaryVariant</item>
+    <item name="colorOnPrimary">@color/colorOnPrimary</item>
+    <!-- Secondary brand color. -->
+    <item name="colorSecondary">@color/colorSecondary</item>
+    <item name="colorSecondaryVariant">@color/colorSecondaryVariant</item>
+    <item name="colorOnSecondary">@color/colorOnSecondary</item>
+    <!-- Status bar color. -->
+    <item name="android:statusBarColor">@color/l_pink</item>
+<!--    <item name="android:windowLightStatusBar">true</item>-->
+    </style>
+</resources>
