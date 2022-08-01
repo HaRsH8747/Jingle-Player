@@ -1,6 +1,7 @@
 package com.jingleplayer.audiosection
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -13,8 +14,8 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
-import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -40,8 +41,8 @@ class AudioActivity : AppCompatActivity() {
         var search: Boolean = false
         var sortOrder: Int = 0
         val sortingList = arrayOf(
-            MediaStore.Video.Media.DATE_ADDED + " DESC",
-            MediaStore.Video.Media.DATE_ADDED,
+            MediaStore.Video.Media.DATE_TAKEN + " DESC",
+            MediaStore.Video.Media.DATE_TAKEN,
             MediaStore.Video.Media.TITLE,
             MediaStore.Video.Media.TITLE + " DESC",
             MediaStore.Video.Media.SIZE,
@@ -52,7 +53,7 @@ class AudioActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setTheme(R.style.Theme_JinglePlayer)
+
         binding = ActivityAudioBinding.inflate(layoutInflater)
         setContentView(binding.root)
         audioActivity = this
@@ -199,7 +200,7 @@ class AudioActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        if(!AudioPlayerActivity.isPlaying){
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && !AudioPlayerActivity.isPlaying ){
             JingleMainClass.notificationManager.cancelAll()
         }
     }
@@ -220,4 +221,15 @@ class AudioActivity : AppCompatActivity() {
         }
         if(AudioPlayerActivity.musicService != null) binding.nowPlaying.visibility = View.VISIBLE
     }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        musicAdapter.onResult(requestCode, resultCode)
+    }
+
+//    var resultLauncher = registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result ->
+//        if (result.resultCode == Activity.RESULT_OK) {
+//            musicAdapter.onResult(result.resultCode, resultCode)
+//        }
+//    }
 }

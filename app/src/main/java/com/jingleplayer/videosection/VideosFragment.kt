@@ -37,7 +37,7 @@ class VideosFragment : Fragment() {
 
         val spinnerAdapter: ArrayAdapter<String> =
             ArrayAdapter<String>(requireContext(), R.layout.spinner_item, searchType)
-        spinnerAdapter.setDropDownViewResource(R.layout.custom_spinner_drop_down)
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         binding.spinner.adapter = spinnerAdapter
         binding.spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(adapterView: AdapterView<*>?, view: View, i: Int, l: Long) {

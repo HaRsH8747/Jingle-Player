@@ -6,6 +6,7 @@ import android.app.AlertDialog
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
+import android.content.res.Resources
 import android.graphics.Color
 import android.media.MediaScannerConnection
 import android.net.Uri
@@ -14,6 +15,7 @@ import android.provider.MediaStore
 import android.text.SpannableStringBuilder
 import android.text.format.DateUtils
 import android.text.format.Formatter
+import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -90,7 +92,9 @@ class VideoAdapter(private val context: Context, private var videoList: ArrayLis
             lp?.x = location[0]
             lp?.y = location[1]
             dialog.show()
-            dialog.window?.setLayout(350,700)
+            val width = (180 * Resources.getSystem().displayMetrics.density + 0.5F).toInt()
+            val height = (350 * Resources.getSystem().displayMetrics.density + 0.5F).toInt()
+            dialog.window?.setLayout(width,height)
             bindingMF.renameBtn.setOnClickListener {
                 dialog.dismiss()
                 requestWriteR()
@@ -322,13 +326,14 @@ class VideoAdapter(private val context: Context, private var videoList: ArrayLis
                 VideoActivity.videoList = getAllVideos(context)
             }
             else -> {
-//                MainActivity.videoList[position].title = newName
-//                MainActivity.videoList[position].path = newFile.path
-//                MainActivity.videoList[position].artUri = Uri.fromFile(newFile)
-//                notifyItemChanged(position)
-                VideoActivity.videoList = getAllVideos(context)
-                videoList = VideoActivity.videoList
-                notifyDataSetChanged()
+                VideoActivity.videoList[position].title = newName
+                VideoActivity.videoList[position].path = newFile.path
+                VideoActivity.videoList[position].artUri = Uri.fromFile(newFile)
+                notifyItemChanged(position)
+//                Log.d("CLEAR","else")
+//                VideoActivity.videoList = getAllVideos(context)
+//                videoList = VideoActivity.videoList
+//                notifyDataSetChanged()
             }
         }
     }

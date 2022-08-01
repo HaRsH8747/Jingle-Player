@@ -7,8 +7,8 @@ import java.util.concurrent.TimeUnit
 import kotlin.system.exitProcess
 
 
-data class Music(val id:String, val title:String, val album:String ,val artist:String, val duration: Long = 0, val path: String,
-val artUri:String,val size:String)
+data class Music(val id:String, var title:String, val album:String, val artist:String, val duration: Long = 0, var path: String,
+                 var artUri:String, val size:String)
 
 class Playlist{
     lateinit var name: String

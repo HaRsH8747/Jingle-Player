@@ -5,6 +5,7 @@ import android.app.Activity
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
+import android.content.res.Resources
 import android.graphics.Color
 import android.media.MediaScannerConnection
 import android.net.Uri
@@ -13,6 +14,7 @@ import android.provider.MediaStore
 import android.text.SpannableStringBuilder
 import android.text.format.DateUtils
 import android.text.format.Formatter
+import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.MotionEvent
@@ -32,6 +34,7 @@ import com.jingleplayer.databinding.DetailsViewBinding
 import com.jingleplayer.databinding.MusicViewBinding
 import com.jingleplayer.databinding.RenameFieldBinding
 import com.google.android.material.color.MaterialColors
+import com.jingleplayer.videosection.VideoActivity
 import java.io.File
 
 class MusicAdapter(private val context: Context, private var musicList: ArrayList<Music>)
@@ -79,7 +82,9 @@ class MusicAdapter(private val context: Context, private var musicList: ArrayLis
             lp?.x = location[0]
             lp?.y = location[1]
             dialog.show()
-            dialog.window?.setLayout(350,700)
+            val width = (180 * Resources.getSystem().displayMetrics.density + 0.5F).toInt()
+            val height = (350 * Resources.getSystem().displayMetrics.density + 0.5F).toInt()
+            dialog.window?.setLayout(width,height)
             bindingMF.renameBtn.setOnClickListener {
                 dialog.dismiss()
                 requestWriteR()
@@ -147,7 +152,7 @@ class MusicAdapter(private val context: Context, private var musicList: ArrayLis
             //for devices less than android 11
             val file = File(musicList[position].path)
             val builder = MaterialAlertDialogBuilder(context,R.style.alertDialog)
-            builder.setTitle("Delete Music?")
+                .setTitle("Delete Music?")
                 .setMessage(musicList[position].title)
                 .setPositiveButton("Yes"){ self, _ ->
                     if(file.exists() && file.delete()){
@@ -160,12 +165,8 @@ class MusicAdapter(private val context: Context, private var musicList: ArrayLis
             val delDialog = builder.create()
 //            delDialog.window?.setBackgroundDrawable(ColorDrawable(R.color.white))
             delDialog.show()
-            delDialog.getButton(android.app.AlertDialog.BUTTON_POSITIVE).setTextColor(
-                MaterialColors.getColor(context, R.attr.themeColor, Color.BLACK)
-            )
-            delDialog.getButton(android.app.AlertDialog.BUTTON_NEGATIVE).setTextColor(
-                MaterialColors.getColor(context, R.attr.themeColor, Color.BLACK)
-            )
+            delDialog.getButton(android.app.AlertDialog.BUTTON_POSITIVE).setTextColor(Color.BLACK)
+            delDialog.getButton(android.app.AlertDialog.BUTTON_NEGATIVE).setTextColor(Color.BLACK)
         }
     }
 
@@ -217,7 +218,7 @@ class MusicAdapter(private val context: Context, private var musicList: ArrayLis
                             context.contentResolver.update(fromUri, it, null, null)
                         }
 
-                        updateRenameUI()
+                        updateRenameUI(position, newName = newName.toString(), newFile = newFile)
                     }
                     self.dismiss()
                 }
@@ -233,10 +234,12 @@ class MusicAdapter(private val context: Context, private var musicList: ArrayLis
                     val currentFile = File(musicList[position].path)
                     val newName = bindingRF.renameField.text
                     if(newName != null && currentFile.exists() && newName.toString().isNotEmpty()){
+                        Log.d("CLEAR","not empty")
                         val newFile = File(currentFile.parentFile, newName.toString()+"."+currentFile.extension)
                         if(currentFile.renameTo(newFile)){
+                            Log.d("CLEAR","Renaming")
                             MediaScannerConnection.scanFile(context, arrayOf(newFile.toString()), arrayOf("audio/*"), null)
-                            updateRenameUI()
+                            updateRenameUI(position, newName = newName.toString(), newFile = newFile)
                         }
                     }
                     self.dismiss()
@@ -255,10 +258,14 @@ class MusicAdapter(private val context: Context, private var musicList: ArrayLis
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    private fun updateRenameUI(){
-        AudioActivity.MusicListMA = audioActivity.getAllAudio()
-        musicList = AudioActivity.MusicListMA
-        notifyDataSetChanged()
+    private fun updateRenameUI(position: Int, newName: String, newFile: File){
+        AudioActivity.MusicListMA[position].title = newName
+        AudioActivity.MusicListMA[position].path = newFile.path
+//        AudioActivity.MusicListMA[position].artUri = Uri.fromFile(newFile).toString()
+        notifyItemChanged(position)
+//        AudioActivity.MusicListMA = audioActivity.getAllAudio()
+//        musicList = AudioActivity.MusicListMA
+//        notifyDataSetChanged()
     }
 
     override fun getItemCount(): Int {
@@ -277,4 +284,9 @@ class MusicAdapter(private val context: Context, private var musicList: ArrayLis
         ContextCompat.startActivity(context, intent, null)
         audioActivity.overridePendingTransition(R.anim.slide_in_top,R.anim.slide_out_bottom)
     }
+
+    fun onResult(requestCode: Int, resultCode: Int){
+        if(resultCode == Activity.RESULT_OK && requestCode == 123) updateDeleteUI(newPosition)
+    }
+
 }

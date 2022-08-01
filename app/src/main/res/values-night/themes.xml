@@ -41,4 +41,18 @@
     <item name="android:statusBarColor">@color/l_pink</item>
 <!--    <item name="android:windowLightStatusBar">true</item>-->
     </style>
+
+    <style name="Theme.JinglePlayerDark" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryVariant">@color/colorPrimaryVariant</item>
+        <item name="colorOnPrimary">@color/colorOnPrimary</item>
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">@color/colorSecondary</item>
+        <item name="colorSecondaryVariant">@color/colorSecondaryVariant</item>
+        <item name="colorOnSecondary">@color/colorOnSecondary</item>
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor">@color/l_pink</item>
+        <!--    <item name="android:windowLightStatusBar">true</item>-->
+    </style>
 </resources>

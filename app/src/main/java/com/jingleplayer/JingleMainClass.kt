@@ -22,7 +22,6 @@ class JingleMainClass:Application() {
             //for lockscreen -> test this and let me know.
 //            notificationChannel.importance = NotificationManager.IMPORTANCE_HIGH
 //            notificationChannel.lockscreenVisibility = Notification.VISIBILITY_PUBLIC
-
             notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(notificationChannel)
         }

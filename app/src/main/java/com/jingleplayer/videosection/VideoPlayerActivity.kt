@@ -637,7 +637,7 @@ class VideoPlayerActivity : AppCompatActivity(), AudioManager.OnAudioFocusChange
         val sWidth = Resources.getSystem().displayMetrics.widthPixels
         val sHeight = Resources.getSystem().displayMetrics.heightPixels
 
-        val border = 100 * Resources.getSystem().displayMetrics.density.toInt()
+        val border = Resources.getSystem().displayMetrics.density.toInt()
         if (event!!.x < border || event.y < border || event.x > sWidth - border || event.y > sHeight - border)
             return false
 

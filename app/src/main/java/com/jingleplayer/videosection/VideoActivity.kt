@@ -30,8 +30,8 @@ class VideoActivity : AppCompatActivity() {
         var sortValue: Int = 0
 
         val sortList = arrayOf(
-            MediaStore.Video.Media.DATE_ADDED + " DESC",
-            MediaStore.Video.Media.DATE_ADDED,
+            MediaStore.Video.Media.DATE_TAKEN + " DESC",
+            MediaStore.Video.Media.DATE_TAKEN,
             MediaStore.Video.Media.TITLE,
             MediaStore.Video.Media.TITLE + " DESC",
             MediaStore.Video.Media.SIZE,
@@ -41,7 +41,6 @@ class VideoActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setTheme(R.style.Theme_JinglePlayer)
         binding = ActivityVideoBinding.inflate(layoutInflater)
         setContentView(binding.root)
         videoActivity = this
