@@ -10,6 +10,7 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
@@ -41,12 +42,12 @@ class AudioActivity : AppCompatActivity() {
         var search: Boolean = false
         var sortOrder: Int = 0
         val sortingList = arrayOf(
-            MediaStore.Video.Media.DATE_TAKEN + " DESC",
-            MediaStore.Video.Media.DATE_TAKEN,
-            MediaStore.Video.Media.TITLE,
-            MediaStore.Video.Media.TITLE + " DESC",
-            MediaStore.Video.Media.SIZE,
-            MediaStore.Video.Media.SIZE + " DESC"
+            MediaStore.Audio.Media.DATE_MODIFIED + " DESC",
+            MediaStore.Audio.Media.DATE_MODIFIED,
+            MediaStore.Audio.Media.DISPLAY_NAME,
+            MediaStore.Audio.Media.DISPLAY_NAME + " DESC",
+            MediaStore.Audio.Media.SIZE,
+            MediaStore.Audio.Media.SIZE + " DESC"
         )
     }
 
@@ -64,10 +65,25 @@ class AudioActivity : AppCompatActivity() {
         binding.spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(adapterView: AdapterView<*>?, view: View, i: Int, l: Long) {
                 spinnerIndex = i
+                binding.search.text.clear()
                 if(sortOrder != spinnerIndex){
                     sortOrder = spinnerIndex
-                    MusicListMA = getAllAudio()
+                    MusicListMA = getAllAudio(false)
                     musicAdapter.updateMusicList(MusicListMA)
+//                    if (binding.search.text.toString().isNotEmpty()){
+//                        sortOrder = spinnerIndex
+//                        MusicListMA = getAllAudio(false)
+//                        val selectedMusicList: ArrayList<Music> = ArrayList()
+//                        val userInput = binding.search.text.toString().lowercase()
+//                        for (music in MusicListMA){
+//                            if (music.displayName.contains(userInput)){
+//                                selectedMusicList.add(music)
+//                            }
+//                        }
+//                        musicAdapter.updateMusicList(selectedMusicList)
+//                    }
+//                    else{
+//                    }
                 }
             }
             override fun onNothingSelected(adapterView: AdapterView<*>?) {}
@@ -146,7 +162,7 @@ class AudioActivity : AppCompatActivity() {
         search = false
         val sortEditor = getSharedPreferences("SORTING", MODE_PRIVATE)
         sortOrder = sortEditor.getInt("sortOrder", 0)
-        MusicListMA = getAllAudio()
+        MusicListMA = getAllAudio(false)
         binding.musicRV.setHasFixedSize(true)
         binding.musicRV.setItemViewCacheSize(13)
         binding.musicRV.layoutManager = LinearLayoutManager(this)
@@ -158,7 +174,7 @@ class AudioActivity : AppCompatActivity() {
             if (binding.search.text.isNotEmpty()){
                 musicAdapter.updateMusicList(searchList = musicListSearch)
             }else{
-                MusicListMA = getAllAudio()
+                MusicListMA = getAllAudio(false)
             }
 //            musicAdapter.updateMusicList(MusicListMA)
             binding.refreshLayout.isRefreshing = false
@@ -166,12 +182,16 @@ class AudioActivity : AppCompatActivity() {
     }
     @SuppressLint("Recycle", "Range")
     @RequiresApi(Build.VERSION_CODES.R)
-    fun getAllAudio(): ArrayList<Music>{
+    fun getAllAudio(filter: Boolean): ArrayList<Music>{
         val tempList = ArrayList<Music>()
-        val selection = MediaStore.Audio.Media.IS_MUSIC +  " != 0"
+        val selection: String = if (filter){
+            MediaStore.Audio.Media.DISPLAY_NAME +  " Like %${binding.search.text}%"
+        }else{
+            MediaStore.Audio.Media.IS_MUSIC +  " != 0"
+        }
         val projection = arrayOf(MediaStore.Audio.Media._ID,MediaStore.Audio.Media.TITLE,MediaStore.Audio.Media.ALBUM,
             MediaStore.Audio.Media.ARTIST,MediaStore.Audio.Media.DURATION,MediaStore.Audio.Media.DATE_ADDED,
-            MediaStore.Audio.Media.DATA, MediaStore.Audio.Media.ALBUM_ID, MediaStore.Audio.Media.SIZE)
+            MediaStore.Audio.Media.DATA, MediaStore.Audio.Media.ALBUM_ID, MediaStore.Audio.Media.SIZE, MediaStore.Audio.Media.DISPLAY_NAME)
         val cursor = this.contentResolver.query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, projection,selection,null,
         sortingList[sortOrder], null)
         if(cursor != null){
@@ -184,13 +204,14 @@ class AudioActivity : AppCompatActivity() {
                     val pathC = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA))
                     val durationC = cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Media.DURATION))
                     val albumIdC = cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID)).toString()
-                    val size = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.SIZE))
+                    val size = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.SIZE))?:"0"
+                    val displayName = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DISPLAY_NAME))?:titleC
                     val uri = Uri.parse("content://media/external/audio/albumart")
                     val artUriC = Uri.withAppendedPath(uri, albumIdC).toString()
                     val music = Music(id = idC, title = titleC, album = albumC, artist = artistC, path = pathC, duration = durationC,
-                    artUri = artUriC, size = size)
+                    artUri = artUriC, size = size, displayName = displayName)
                     val file = File(music.path)
-                    if(file.exists())
+                    if(file.exists() && size != "0")
                         tempList.add(music)
                 }while (cursor.moveToNext())
                 cursor.close()
@@ -216,7 +237,7 @@ class AudioActivity : AppCompatActivity() {
         val sortValue = sortEditor.getInt("sortOrder", 0)
         if(sortOrder != sortValue){
             sortOrder = sortValue
-            MusicListMA = getAllAudio()
+            MusicListMA = getAllAudio(false)
             musicAdapter.updateMusicList(MusicListMA)
         }
         if(AudioPlayerActivity.musicService != null) binding.nowPlaying.visibility = View.VISIBLE

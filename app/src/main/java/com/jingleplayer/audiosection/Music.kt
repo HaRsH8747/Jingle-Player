@@ -8,7 +8,7 @@ import kotlin.system.exitProcess
 
 
 data class Music(val id:String, var title:String, val album:String, val artist:String, val duration: Long = 0, var path: String,
-                 var artUri:String, val size:String)
+                 var artUri:String, val size:String,var displayName: String)
 
 class Playlist{
     lateinit var name: String

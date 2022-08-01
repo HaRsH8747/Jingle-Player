@@ -328,7 +328,7 @@ class VideoAdapter(private val context: Context, private var videoList: ArrayLis
             else -> {
                 VideoActivity.videoList[position].title = newName
                 VideoActivity.videoList[position].path = newFile.path
-                VideoActivity.videoList[position].artUri = Uri.fromFile(newFile)
+//                VideoActivity.videoList[position].artUri = Uri.fromFile(newFile)
                 notifyItemChanged(position)
 //                Log.d("CLEAR","else")
 //                VideoActivity.videoList = getAllVideos(context)

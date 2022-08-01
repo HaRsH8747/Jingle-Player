@@ -30,8 +30,8 @@ class VideoActivity : AppCompatActivity() {
         var sortValue: Int = 0
 
         val sortList = arrayOf(
-            MediaStore.Video.Media.DATE_TAKEN + " DESC",
-            MediaStore.Video.Media.DATE_TAKEN,
+            MediaStore.Video.Media.DATE_MODIFIED + " DESC",
+            MediaStore.Video.Media.DATE_MODIFIED,
             MediaStore.Video.Media.TITLE,
             MediaStore.Video.Media.TITLE + " DESC",
             MediaStore.Video.Media.SIZE,

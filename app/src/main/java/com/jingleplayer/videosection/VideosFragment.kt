@@ -42,6 +42,7 @@ class VideosFragment : Fragment() {
         binding.spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(adapterView: AdapterView<*>?, view: View, i: Int, l: Long) {
                 spinnerIndex = i
+                binding.search.text.clear()
                 if(VideoActivity.sortValue != spinnerIndex){
                     VideoActivity.sortValue = spinnerIndex
                     VideoActivity.videoList = getAllVideos(requireContext())

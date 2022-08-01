@@ -67,7 +67,7 @@ class AudioPlayerActivity : AppCompatActivity(), ServiceConnection, MediaPlayer.
                 .load(getImgArt(musicListPA[songPosition].path))
                 .apply(RequestOptions().placeholder(R.drawable.music_player_icon_slash_screen).centerCrop())
                 .into(binding.songImgPA)
-            binding.songNamePA.text = musicListPA[songPosition].title
+            binding.songNamePA.text = musicListPA[songPosition].displayName
 
         }
         else initializeLayout()
@@ -209,7 +209,7 @@ class AudioPlayerActivity : AppCompatActivity(), ServiceConnection, MediaPlayer.
             .load(musicListPA[songPosition].artUri)
             .apply(RequestOptions().placeholder(R.drawable.music_player_icon_slash_screen).centerCrop())
             .into(binding.songImgPA)
-        binding.songNamePA.text = musicListPA[songPosition].title
+        binding.songNamePA.text = musicListPA[songPosition].displayName
         if(repeat) binding.repeatBtnPA.setColorFilter(ContextCompat.getColor(applicationContext,
             R.color.colorOnSecondary))
         if(min15 || min30 || min60) binding.timerBtnPA.setColorFilter(ContextCompat.getColor(applicationContext,
@@ -289,7 +289,7 @@ class AudioPlayerActivity : AppCompatActivity(), ServiceConnection, MediaPlayer.
             .load(musicListPA[songPosition].artUri)
             .apply(RequestOptions().placeholder(R.drawable.music_player_icon_slash_screen).centerCrop())
             .into(NowPlaying.binding.songImgNP)
-        NowPlaying.binding.songNameNP.text = musicListPA[songPosition].title
+        NowPlaying.binding.songNameNP.text = musicListPA[songPosition].displayName
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -334,17 +334,19 @@ class AudioPlayerActivity : AppCompatActivity(), ServiceConnection, MediaPlayer.
     private fun getMusicDetails(contentUri: Uri): Music {
         var cursor: Cursor? = null
         try {
-            val projection = arrayOf(MediaStore.Audio.Media.DATA, MediaStore.Audio.Media.DURATION,MediaStore.Audio.Media.SIZE)
+            val projection = arrayOf(MediaStore.Audio.Media.DATA, MediaStore.Audio.Media.DURATION,MediaStore.Audio.Media.SIZE, MediaStore.Audio.Media.DISPLAY_NAME)
             cursor = this.contentResolver.query(contentUri, projection, null, null, null)
             val dataColumn = cursor?.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA)
             val durationColumn = cursor?.getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION)
             val sizeColumn = cursor?.getColumnIndexOrThrow(MediaStore.Audio.Media.SIZE)
+            val displayColumn = cursor?.getColumnIndexOrThrow(MediaStore.Audio.Media.DISPLAY_NAME)
             cursor!!.moveToFirst()
             val path = dataColumn?.let { cursor.getString(it) }
             val duration = durationColumn?.let { cursor.getLong(it) }!!
             val size = sizeColumn?.let { cursor.getString(it) }!!
+            val displayName = displayColumn?.let { cursor.getString(it) }!!
             return Music(id = "Unknown", title = path.toString(), album = "Unknown", artist = "Unknown", duration = duration,
-            artUri = "Unknown", path = path.toString(), size = size)
+            artUri = "Unknown", path = path.toString(), size = size, displayName = displayName)
         }finally {
             cursor?.close()
         }
