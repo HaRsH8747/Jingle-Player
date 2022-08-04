@@ -1,6 +1,7 @@
 package com.jingleplayer.audiosection
 
 import android.media.MediaMetadataRetriever
+import android.os.Build
 import com.jingleplayer.audiosection.favouritemusic.FavouriteActivity
 import java.io.File
 import java.util.concurrent.TimeUnit
@@ -72,4 +73,10 @@ fun checkPlaylist(playlist: ArrayList<Music>): ArrayList<Music>{
             playlist.removeAt(index)
     }
     return playlist
+}
+
+inline fun <T> sdk29AndUp(onSdk29: () -> T): T? {
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        onSdk29()
+    }else null
 }

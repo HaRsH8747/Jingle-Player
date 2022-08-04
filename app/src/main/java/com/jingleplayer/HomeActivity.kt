@@ -6,6 +6,7 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.result.ActivityResult
@@ -25,6 +26,7 @@ import com.google.android.play.core.tasks.Task
 import com.jingleplayer.audiosection.AudioActivity
 import com.jingleplayer.audiosection.AudioPlayerActivity
 import com.jingleplayer.audiosection.exitApplication
+import com.jingleplayer.audiosection.sdk29AndUp
 import com.jingleplayer.databinding.ActivityHomeBinding
 import com.jingleplayer.videosection.VideoActivity
 import kotlinx.coroutines.launch
@@ -37,8 +39,11 @@ import java.io.IOException
 class HomeActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
 
     private lateinit var binding: ActivityHomeBinding
-    private var hasPermissions: Boolean = false
+    private var hasReadPermissions: Boolean = false
+    private var hasWritePermissions: Boolean = false
+    private val REQUEST_CODE_READ_EXTERNAL_STORAGE = 10
     private val REQUEST_CODE_WRITE_EXTERNAL_STORAGE = 11
+    private val REQUEST_CODE_MANAGE_EXTERNAL_STORAGE = 12
     private lateinit var appUpdateManager: AppUpdateManager
     private val MY_REQUEST_CODE: Int = 99
 
@@ -55,7 +60,7 @@ class HomeActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
         binding.btnRate.setOnClickListener { rateApplication() }
 
         binding.btnAudio.setOnClickListener {
-            if (hasPermissions){
+            if (hasWritePermissions && hasReadPermissions){
                 val intent = Intent(this, AudioActivity::class.java)
                 startActivity(intent)
                 overridePendingTransition(R.anim.slide_in_right,R.anim.slide_out_left)
@@ -65,7 +70,7 @@ class HomeActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
         }
 
         binding.btnVideo.setOnClickListener {
-            if (hasPermissions){
+            if (hasReadPermissions && hasWritePermissions){
                 val intent = Intent(this, VideoActivity::class.java)
                 startActivity(intent)
                 overridePendingTransition(R.anim.slide_in_right,R.anim.slide_out_left)
@@ -226,13 +231,25 @@ class HomeActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
 
     private fun requestPermissions() {
         if (EasyPermissions.hasPermissions(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-            hasPermissions = true
+            hasWritePermissions = true
         }else{
             EasyPermissions.requestPermissions(
                 this,
                 "You need to accept Read permissions to use this app",
                 REQUEST_CODE_WRITE_EXTERNAL_STORAGE,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE
+            )
+        }
+        val minSdk29 = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
+        hasWritePermissions = hasWritePermissions || minSdk29
+        if (EasyPermissions.hasPermissions(this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
+            hasReadPermissions = true
+        }else{
+            EasyPermissions.requestPermissions(
+                this,
+                "You need to accept Read permissions to use this app",
+                REQUEST_CODE_READ_EXTERNAL_STORAGE,
+                Manifest.permission.READ_EXTERNAL_STORAGE
             )
         }
     }
@@ -249,7 +266,13 @@ class HomeActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
     override fun onPermissionsGranted(requestCode: Int, perms: MutableList<String>) {
         if (requestCode == REQUEST_CODE_WRITE_EXTERNAL_STORAGE){
             lifecycleScope.launch {
-                hasPermissions = true
+                val minSdk29 = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
+                hasWritePermissions = true || minSdk29
+            }
+        }
+        if (requestCode == REQUEST_CODE_READ_EXTERNAL_STORAGE){
+            lifecycleScope.launch {
+                hasReadPermissions = true
             }
         }
     }

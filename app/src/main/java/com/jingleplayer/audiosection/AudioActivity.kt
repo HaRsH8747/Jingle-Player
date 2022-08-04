@@ -15,27 +15,32 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.jingleplayer.*
 import com.jingleplayer.audiosection.favouritemusic.FavouriteActivity
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import com.jingleplayer.databinding.ActivityAudioBinding
+import kotlinx.coroutines.launch
 import java.io.File
 
 class AudioActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityAudioBinding
     private lateinit var musicAdapter: MusicAdapter
-    private var spinnerIndex = 0
+    private var spinnerIndex = -1
     private val searchType =
         arrayOf("Recent", "Oldest", "Name(A to Z)", "Name(Z to A)", "File Size(Smallest)", "File Size(Largest)")
 
     companion object{
+        lateinit var renameIntentSenderLauncher: ActivityResultLauncher<IntentSenderRequest>
         lateinit var MusicListMA : ArrayList<Music>
         lateinit var musicListSearch : ArrayList<Music>
         lateinit var audioActivity: AudioActivity
@@ -89,6 +94,16 @@ class AudioActivity : AppCompatActivity() {
             override fun onNothingSelected(adapterView: AdapterView<*>?) {}
         }
 
+        renameIntentSenderLauncher = registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) {
+            if(it.resultCode == RESULT_OK) {
+                lifecycleScope.launch {
+                    musicAdapter.renameResult()
+                }
+            } else {
+                Toast.makeText(this, "File couldn't be Renamed", Toast.LENGTH_SHORT).show()
+            }
+        }
+
         binding.back.setOnClickListener {onBackPressed()}
         binding.ivFavourites.setOnClickListener {
             val intent = Intent(this,FavouriteActivity::class.java)
@@ -116,44 +131,20 @@ class AudioActivity : AppCompatActivity() {
             }
         })
 
-        if(requestRuntimePermission()){
-            initializeLayout()
-            FavouriteActivity.favouriteSongs = ArrayList()
-            val editor = getSharedPreferences("FAVOURITES", MODE_PRIVATE)
-            val jsonString = editor.getString("FavouriteSongs", null)
-            val typeToken = object : TypeToken<ArrayList<Music>>(){}.type
-            if(jsonString != null){
-                val data: ArrayList<Music> = GsonBuilder().create().fromJson(jsonString, typeToken)
-                FavouriteActivity.favouriteSongs.addAll(data)
-            }
+        initializeLayout()
+        FavouriteActivity.favouriteSongs = ArrayList()
+        val editor = getSharedPreferences("FAVOURITES", MODE_PRIVATE)
+        val jsonString = editor.getString("FavouriteSongs", null)
+        val typeToken = object : TypeToken<ArrayList<Music>>(){}.type
+        if(jsonString != null){
+            val data: ArrayList<Music> = GsonBuilder().create().fromJson(jsonString, typeToken)
+            FavouriteActivity.favouriteSongs.addAll(data)
         }
     }
 
     override fun onBackPressed() {
         super.onBackPressed()
         overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
-    }
-
-    private fun requestRuntimePermission() :Boolean{
-        if(ActivityCompat.checkSelfPermission(this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
-            != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.WRITE_EXTERNAL_STORAGE), 13)
-            return false
-        }
-        return true
-    }
-
-    @RequiresApi(Build.VERSION_CODES.R)
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if(requestCode == 13){
-            if(grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                Toast.makeText(this, "Permission Granted",Toast.LENGTH_SHORT).show()
-                initializeLayout()
-            }
-            else
-                ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.WRITE_EXTERNAL_STORAGE), 13)
-        }
     }
 
     @RequiresApi(Build.VERSION_CODES.R)
@@ -184,6 +175,9 @@ class AudioActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.R)
     fun getAllAudio(filter: Boolean): ArrayList<Music>{
         val tempList = ArrayList<Music>()
+//        val collection = sdk29AndUp {
+//            MediaStore.Audio.Media.getContentUri(MediaStore.VOLUME_EXTERNAL)
+//        }?: MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
         val selection: String = if (filter){
             MediaStore.Audio.Media.DISPLAY_NAME +  " Like %${binding.search.text}%"
         }else{
@@ -235,11 +229,16 @@ class AudioActivity : AppCompatActivity() {
         editor.apply()
         val sortEditor = getSharedPreferences("SORTING", MODE_PRIVATE)
         val sortValue = sortEditor.getInt("sortOrder", 0)
-        if(sortOrder != sortValue){
-            sortOrder = sortValue
+        if(spinnerIndex>=0){
+            sortOrder = spinnerIndex
             MusicListMA = getAllAudio(false)
             musicAdapter.updateMusicList(MusicListMA)
         }
+//        if(sortOrder != sortValue){
+//            sortOrder = sortValue
+//            MusicListMA = getAllAudio(false)
+//            musicAdapter.updateMusicList(MusicListMA)
+//        }
         if(AudioPlayerActivity.musicService != null) binding.nowPlaying.visibility = View.VISIBLE
     }
 
