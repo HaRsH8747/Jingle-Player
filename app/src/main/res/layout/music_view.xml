@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/cvItem"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -38,7 +37,7 @@
             android:layout_marginStart="10dp"
             android:layout_marginTop="5dp"
             android:fontFamily="@font/roboto_medium"
-            android:text="688: A-Rod I Still Having A Ball After All"
+            android:text="@string/audio_name"
             android:textColor="@color/black"
             android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -54,7 +53,7 @@
             android:fontFamily="@font/roboto_medium"
             android:ellipsize="end"
             android:maxLines="1"
-            android:text="Twenty Thousand Hertz"
+            android:text="@string/artist_name"
             android:textColor="@color/black"
             android:textSize="12sp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -68,7 +67,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:fontFamily="@font/roboto_medium"
-            android:text="49:26 mins"
+            android:text="@string/_00_00"
             android:textColor="@color/black"
             android:textSize="12sp"
             app:layout_constraintBottom_toTopOf="@+id/songSize"
@@ -82,7 +81,7 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/roboto_medium"
             android:layout_marginTop="5dp"
-            android:text="5 MB"
+            android:text="@string/_0_mb"
             android:textColor="@color/black"
             android:textSize="12sp"
             app:layout_constraintBottom_toBottomOf="@+id/songAlbumMV"
@@ -91,27 +90,26 @@
             app:layout_constraintStart_toStartOf="@+id/songDuration"
             app:layout_constraintTop_toBottomOf="@+id/songDuration" />
 
-        <ImageView
-            android:id="@+id/imageView"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:layout_marginTop="10dp"
-            android:src="@drawable/heart_outline"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/songAlbumMV"
-            app:layout_constraintTop_toBottomOf="@+id/songAlbumMV" />
+<!--        <ImageView-->
+<!--            android:id="@+id/imageView"-->
+<!--            android:layout_width="20dp"-->
+<!--            android:layout_height="20dp"-->
+<!--            android:layout_marginTop="10dp"-->
+<!--            android:src="@drawable/heart_outline"-->
+<!--            android:visibility="gone"-->
+<!--            app:layout_constraintBottom_toBottomOf="parent"-->
+<!--            app:layout_constraintStart_toStartOf="@+id/songAlbumMV"-->
+<!--            app:layout_constraintTop_toBottomOf="@+id/songAlbumMV" />-->
 
-        <ImageView
-            android:id="@+id/imageView2"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:layout_marginStart="10dp"
-            android:src="@drawable/dot"
-            android:visibility="gone"
-            app:layout_constraintStart_toEndOf="@+id/imageView"
-            app:layout_constraintTop_toTopOf="@+id/imageView" />
-
+<!--        <ImageView-->
+<!--            android:id="@+id/imageView2"-->
+<!--            android:layout_width="20dp"-->
+<!--            android:layout_height="20dp"-->
+<!--            android:layout_marginStart="10dp"-->
+<!--            android:src="@drawable/dot"-->
+<!--            android:visibility="gone"-->
+<!--            app:layout_constraintStart_toEndOf="@+id/imageView"-->
+<!--            app:layout_constraintTop_toTopOf="@+id/imageView" />-->
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:textSize="18sp"
     android:maxLines="1"
-    android:text="Spinner Text"
+    android:text="@string/spinner_text"
     android:ellipsize="end"
     android:gravity="start"
     android:textColor="@color/black"

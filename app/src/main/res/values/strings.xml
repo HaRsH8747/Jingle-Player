@@ -91,4 +91,17 @@
     <string name="youtube">Youtube</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="back_button">Back Button</string>
+    <string name="favourite_items">Favourite Items</string>
+    <string name="filter_options">Filter Options</string>
+    <string name="jingle_player_logo">Jingle Player Logo</string>
+    <string name="person_logo">Person Logo</string>
+    <string name="audio_thumbnail">Audio Thumbnail</string>
+    <string name="demo_mins">demo mins</string>
+    <string name="demo_mb">demo MB</string>
+    <string name="spinner_text">Spinner Text</string>
+    <string name="audio_name">Audio Name</string>
+    <string name="artist_name">Artist Name</string>
+    <string name="_00_00">00:00</string>
+    <string name="_0_mb">0 MB</string>
 </resources>

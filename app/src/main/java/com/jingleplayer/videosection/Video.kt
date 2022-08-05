@@ -25,7 +25,7 @@ fun getAllVideos(context: Context): ArrayList<Video>{
     val tempList = ArrayList<Video>()
     val tempFolderList = ArrayList<String>()
     val projection = arrayOf(
-        MediaStore.Video.Media.TITLE, MediaStore.Video.Media.SIZE, MediaStore.Video.Media._ID,
+        MediaStore.Video.Media.DISPLAY_NAME, MediaStore.Video.Media.SIZE, MediaStore.Video.Media._ID,
         MediaStore.Video.Media.BUCKET_DISPLAY_NAME, MediaStore.Video.Media.DATA, MediaStore.Video.Media.DATE_ADDED,
         MediaStore.Video.Media.DURATION, MediaStore.Video.Media.BUCKET_ID)
     val cursor = context.contentResolver.query(
@@ -35,7 +35,7 @@ fun getAllVideos(context: Context): ArrayList<Video>{
         if(cursor.moveToNext())
             do {
                 //checking null safety with ?: operator
-                val titleC = cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.TITLE))?:"Unknown"
+                val titleC = cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.DISPLAY_NAME))?:"Unknown"
                 val idC = cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media._ID))?:"Unknown"
                 val folderC = cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.BUCKET_DISPLAY_NAME))?:"Internal Storage"
                 val folderIdC = cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.BUCKET_ID))?:"Unknown"

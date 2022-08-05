@@ -77,6 +77,6 @@ class FoldersActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        adapter.onResult(requestCode, resultCode)
+        adapter.onResult(requestCode, resultCode, data)
     }
 }

@@ -1,16 +1,13 @@
 package com.jingleplayer.audiosection
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
@@ -20,7 +17,6 @@ import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.jingleplayer.*
@@ -123,8 +119,10 @@ class AudioActivity : AppCompatActivity() {
                         if(song.title.lowercase().contains(userInput))
                             musicListSearch.add(song)
                     search = true
-                    musicAdapter.updateMusicList(searchList = musicListSearch)
+                    MusicListMA = musicListSearch
+                    musicAdapter.updateMusicList(MusicListMA)
                 }else{
+                    MusicListMA = getAllAudio(false)
                     musicAdapter.updateMusicList(MusicListMA)
                 }
                 binding.search.addTextChangedListener(this)
@@ -166,6 +164,7 @@ class AudioActivity : AppCompatActivity() {
                 musicAdapter.updateMusicList(searchList = musicListSearch)
             }else{
                 MusicListMA = getAllAudio(false)
+                musicAdapter.updateMusicList(MusicListMA)
             }
 //            musicAdapter.updateMusicList(MusicListMA)
             binding.refreshLayout.isRefreshing = false
@@ -227,13 +226,6 @@ class AudioActivity : AppCompatActivity() {
         val jsonString = GsonBuilder().create().toJson(FavouriteActivity.favouriteSongs)
         editor.putString("FavouriteSongs", jsonString)
         editor.apply()
-        val sortEditor = getSharedPreferences("SORTING", MODE_PRIVATE)
-        val sortValue = sortEditor.getInt("sortOrder", 0)
-        if(spinnerIndex>=0){
-            sortOrder = spinnerIndex
-            MusicListMA = getAllAudio(false)
-            musicAdapter.updateMusicList(MusicListMA)
-        }
 //        if(sortOrder != sortValue){
 //            sortOrder = sortValue
 //            MusicListMA = getAllAudio(false)
@@ -244,7 +236,7 @@ class AudioActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        musicAdapter.onResult(requestCode, resultCode)
+        musicAdapter.onResult(requestCode, resultCode,data)
     }
 
 //    var resultLauncher = registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result ->

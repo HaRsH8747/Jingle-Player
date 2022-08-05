@@ -26,7 +26,6 @@ import com.google.android.play.core.tasks.Task
 import com.jingleplayer.audiosection.AudioActivity
 import com.jingleplayer.audiosection.AudioPlayerActivity
 import com.jingleplayer.audiosection.exitApplication
-import com.jingleplayer.audiosection.sdk29AndUp
 import com.jingleplayer.databinding.ActivityHomeBinding
 import com.jingleplayer.videosection.VideoActivity
 import kotlinx.coroutines.launch
@@ -54,13 +53,12 @@ class HomeActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
         setContentView(binding.root)
         appUpdateManager = AppUpdateManagerFactory.create(this)
         checkUpdate()
-        requestPermissions()
 
         binding.btnShare.setOnClickListener { shareApplication() }
         binding.btnRate.setOnClickListener { rateApplication() }
 
         binding.btnAudio.setOnClickListener {
-            if (hasWritePermissions && hasReadPermissions){
+            if (hasWritePermissions){
                 val intent = Intent(this, AudioActivity::class.java)
                 startActivity(intent)
                 overridePendingTransition(R.anim.slide_in_right,R.anim.slide_out_left)
@@ -70,7 +68,7 @@ class HomeActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
         }
 
         binding.btnVideo.setOnClickListener {
-            if (hasReadPermissions && hasWritePermissions){
+            if (hasWritePermissions){
                 val intent = Intent(this, VideoActivity::class.java)
                 startActivity(intent)
                 overridePendingTransition(R.anim.slide_in_right,R.anim.slide_out_left)
@@ -78,6 +76,11 @@ class HomeActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
                 requestPermissions()
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        requestPermissions()
     }
 
     var resultLauncher = registerForActivityResult(
@@ -172,6 +175,9 @@ class HomeActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
                 goToPlayStore()
             }
         }
+        request.addOnFailureListener {
+            goToPlayStore()
+        }
     }
 
     private fun goToPlayStore() {
@@ -182,7 +188,7 @@ class HomeActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
         goToMarket.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK)
         try {
             startActivity(goToMarket)
-        } catch (e: ActivityNotFoundException) {
+        } catch (e: Exception) {
             startActivity(Intent(Intent.ACTION_VIEW,
                 Uri.parse("http://play.google.com/store/apps/details?id=" + BuildConfig.APPLICATION_ID)))
         }
@@ -235,23 +241,23 @@ class HomeActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
         }else{
             EasyPermissions.requestPermissions(
                 this,
-                "You need to accept Read permissions to use this app",
+                "You need to accept Write permissions to use this app",
                 REQUEST_CODE_WRITE_EXTERNAL_STORAGE,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE
             )
         }
         val minSdk29 = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
         hasWritePermissions = hasWritePermissions || minSdk29
-        if (EasyPermissions.hasPermissions(this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
-            hasReadPermissions = true
-        }else{
-            EasyPermissions.requestPermissions(
-                this,
-                "You need to accept Read permissions to use this app",
-                REQUEST_CODE_READ_EXTERNAL_STORAGE,
-                Manifest.permission.READ_EXTERNAL_STORAGE
-            )
-        }
+//        if (EasyPermissions.hasPermissions(this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
+//            hasReadPermissions = true
+//        }else{
+//            EasyPermissions.requestPermissions(
+//                this,
+//                "You need to accept Read permissions to use this app",
+//                REQUEST_CODE_READ_EXTERNAL_STORAGE,
+//                Manifest.permission.READ_EXTERNAL_STORAGE
+//            )
+//        }
     }
 
     override fun onRequestPermissionsResult(
@@ -266,8 +272,8 @@ class HomeActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
     override fun onPermissionsGranted(requestCode: Int, perms: MutableList<String>) {
         if (requestCode == REQUEST_CODE_WRITE_EXTERNAL_STORAGE){
             lifecycleScope.launch {
-                val minSdk29 = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
-                hasWritePermissions = true || minSdk29
+                val minSdk30 = Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
+                hasWritePermissions = true || minSdk30
             }
         }
         if (requestCode == REQUEST_CODE_READ_EXTERNAL_STORAGE){

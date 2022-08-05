@@ -12,6 +12,7 @@ class JingleMainClass:Application() {
         const val NEXT = "next"
         const val PREVIOUS = "previous"
         const val EXIT = "exit"
+        const val FILE_PERMISSIONS = "FILE_PERMISSIONS"
         lateinit var notificationManager: NotificationManager
     }
     override fun onCreate() {

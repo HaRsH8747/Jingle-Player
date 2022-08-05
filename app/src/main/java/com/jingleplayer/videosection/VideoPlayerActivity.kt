@@ -10,7 +10,6 @@ import android.content.pm.ActivityInfo
 import android.content.res.Configuration
 import android.content.res.Resources
 import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.media.AudioManager
 import android.media.audiofx.LoudnessEnhancer
 import android.net.Uri
@@ -236,7 +235,7 @@ class VideoPlayerActivity : AppCompatActivity(), AudioManager.OnAudioFocusChange
             val customDialog =
                 LayoutInflater.from(this).inflate(R.layout.video_more_features, binding.root, false)
             val bindingMF = VideoMoreFeaturesBinding.bind(customDialog)
-            val dialog = MaterialAlertDialogBuilder(this,R.style.alertDialog).setView(customDialog)
+            val dialog = MaterialAlertDialogBuilder(this, R.style.alertDialog).setView(customDialog)
                 .setOnCancelListener { playVideo() }
                 .create()
             dialog.show()
@@ -271,7 +270,7 @@ class VideoPlayerActivity : AppCompatActivity(), AudioManager.OnAudioFocusChange
                             ))
                         self.dismiss()
                     }
-                    .setSingleChoiceItems(tempTracks,checkedItem) { _, which ->
+                    .setSingleChoiceItems(tempTracks, checkedItem) { _, which ->
                         Snackbar.make(binding.root, audioList[which] + " Selected", 3000).show()
                         trackSelector.setParameters(trackSelector.buildUponParameters()
                             .setRendererDisabled(C.TRACK_TYPE_AUDIO, false)
@@ -298,10 +297,11 @@ class VideoPlayerActivity : AppCompatActivity(), AudioManager.OnAudioFocusChange
                     }
                 }
 
-                val tempTracks = subtitlesList.toArray(arrayOfNulls<CharSequence>(subtitlesList.size))
+                val tempTracks =
+                    subtitlesList.toArray(arrayOfNulls<CharSequence>(subtitlesList.size))
                 val checkedItem = 0
                 val sDialog: androidx.appcompat.app.AlertDialog
-                if (subtitlesList.size==0) {
+                if (subtitlesList.size == 0) {
                     sDialog = MaterialAlertDialogBuilder(this, R.style.alertDialog)
                         .setTitle("Select Subtitles")
                         .setMessage("No Subtitles")
@@ -343,12 +343,12 @@ class VideoPlayerActivity : AppCompatActivity(), AudioManager.OnAudioFocusChange
                 val customDialogS =
                     LayoutInflater.from(this).inflate(R.layout.speed_dialog, binding.root, false)
                 val bindingS = SpeedDialogBinding.bind(customDialogS)
-                val dialogS = MaterialAlertDialogBuilder(this,R.style.alertDialog).setView(customDialogS)
-                    .setCancelable(false)
-                    .setPositiveButton("OK") { self, _ ->
-                        self.dismiss()
-                    }
-                    .create()
+                val dialogS =
+                    MaterialAlertDialogBuilder(this, R.style.alertDialog).setView(customDialogS)
+                        .setPositiveButton("OK") { self, _ ->
+                            self.dismiss()
+                        }
+                        .create()
                 dialogS.show()
                 dialogS.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.BLACK)
                 bindingS.speedText.text = "${DecimalFormat("#.##").format(speed)} X"
@@ -370,16 +370,12 @@ class VideoPlayerActivity : AppCompatActivity(), AudioManager.OnAudioFocusChange
 
             bindingMF.sleepTimer.setOnClickListener {
                 dialog.dismiss()
-                if (timer != null) Toast.makeText(this,
-                    "Timer Already Running!!\nClose App to Reset Timer!!",
-                    Toast.LENGTH_SHORT).show()
-                else {
-                    var sleepTime = 15
-                    val customDialogS = LayoutInflater.from(this)
-                        .inflate(R.layout.speed_dialog, binding.root, false)
-                    val bindingS = SpeedDialogBinding.bind(customDialogS)
-                    val dialogS = MaterialAlertDialogBuilder(this,R.style.alertDialog).setView(customDialogS)
-                        .setCancelable(false)
+                var sleepTime = 15
+                val customDialogS = LayoutInflater.from(this)
+                    .inflate(R.layout.speed_dialog, binding.root, false)
+                val bindingS = SpeedDialogBinding.bind(customDialogS)
+                val dialogS =
+                    MaterialAlertDialogBuilder(this, R.style.alertDialog).setView(customDialogS)
                         .setPositiveButton("OK") { self, _ ->
                             timer = Timer()
                             val task = object : TimerTask() {
@@ -393,17 +389,16 @@ class VideoPlayerActivity : AppCompatActivity(), AudioManager.OnAudioFocusChange
                             playVideo()
                         }
                         .create()
-                    dialogS.show()
-                    dialogS.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.BLACK)
+                dialogS.show()
+                dialogS.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.BLACK)
+                bindingS.speedText.text = "$sleepTime Min"
+                bindingS.minusBtn.setOnClickListener {
+                    if (sleepTime > 15) sleepTime -= 15
                     bindingS.speedText.text = "$sleepTime Min"
-                    bindingS.minusBtn.setOnClickListener {
-                        if (sleepTime > 15) sleepTime -= 15
-                        bindingS.speedText.text = "$sleepTime Min"
-                    }
-                    bindingS.plusBtn.setOnClickListener {
-                        if (sleepTime < 120) sleepTime += 15
-                        bindingS.speedText.text = "$sleepTime Min"
-                    }
+                }
+                bindingS.plusBtn.setOnClickListener {
+                    if (sleepTime < 120) sleepTime += 15
+                    bindingS.speedText.text = "$sleepTime Min"
                 }
             }
             bindingMF.pipModeBtn.setOnClickListener {
@@ -528,7 +523,7 @@ class VideoPlayerActivity : AppCompatActivity(), AudioManager.OnAudioFocusChange
 
     override fun onPictureInPictureModeChanged(
         isInPictureInPictureMode: Boolean,
-        newConfig: Configuration
+        newConfig: Configuration,
     ) {
         super.onPictureInPictureModeChanged(isInPictureInPictureMode, newConfig)
         if (pipStatus != 0) {

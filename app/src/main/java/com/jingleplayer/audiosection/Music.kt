@@ -75,8 +75,8 @@ fun checkPlaylist(playlist: ArrayList<Music>): ArrayList<Music>{
     return playlist
 }
 
-inline fun <T> sdk29AndUp(onSdk29: () -> T): T? {
-    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-        onSdk29()
+inline fun <T> sdk30AndUp(onSdk30: () -> T): T? {
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        onSdk30()
     }else null
 }

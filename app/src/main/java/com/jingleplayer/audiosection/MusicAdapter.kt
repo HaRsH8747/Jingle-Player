@@ -10,44 +10,46 @@ import android.graphics.Color
 import android.media.MediaScannerConnection
 import android.net.Uri
 import android.os.Build
-import android.os.Environment
+import android.provider.DocumentsContract
 import android.provider.MediaStore
-import android.provider.Settings
 import android.text.SpannableStringBuilder
 import android.text.format.DateUtils
 import android.text.format.Formatter
 import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.ViewGroup
 import androidx.activity.result.IntentSenderRequest
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
-import androidx.core.net.toUri
 import androidx.core.text.bold
+import androidx.documentfile.provider.DocumentFile
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
+import com.google.android.material.color.MaterialColors
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.jingleplayer.*
 import com.jingleplayer.audiosection.AudioActivity.Companion.audioActivity
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.jingleplayer.audiosection.AudioActivity.Companion.renameIntentSenderLauncher
 import com.jingleplayer.audiosection.MusicAdapter.MyHolder
 import com.jingleplayer.databinding.AudioMoreFeaturesBinding
 import com.jingleplayer.databinding.DetailsViewBinding
 import com.jingleplayer.databinding.MusicViewBinding
 import com.jingleplayer.databinding.RenameFieldBinding
-import com.google.android.material.color.MaterialColors
-import com.jingleplayer.audiosection.AudioActivity.Companion.renameIntentSenderLauncher
-import com.jingleplayer.videosection.VideoActivity
+import com.jingleplayer.utils.AppPref
 import java.io.File
-import java.io.IOException
+import java.util.regex.Pattern
+
 
 class MusicAdapter(private val context: Context, private var musicList: ArrayList<Music>)
     : RecyclerView.Adapter<MyHolder>() {
 
     private var newPosition = 0
     private lateinit var dialogRF: AlertDialog
+    private var renamePosition = 0
+    private var finalNewName = ""
+    private var appPref: AppPref = AppPref(context)
 
     class MyHolder(binding: MusicViewBinding) : RecyclerView.ViewHolder(binding.root) {
         val title = binding.songNameMV
@@ -208,56 +210,109 @@ class MusicAdapter(private val context: Context, private var musicList: ArrayLis
             dialogRF = MaterialAlertDialogBuilder(context,R.style.alertDialog).setView(customDialogRF)
                 .setCancelable(false)
                 .setPositiveButton("Rename"){ self, _ ->
-                    try {
-                        val currentFile = File(musicList[position].path)
-                        val newName = bindingRF.renameField.text.toString().replace(".${currentFile.extension}","")
-                        val newFile = File(currentFile.parentFile, newName.toString()+"."+currentFile.extension)
-                        val sdCard = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).path)
-//                        val fromUri = Uri.withAppendedPath(MediaStore.Audio.Media.getContentUri(MediaStore.getVolumeName(sdCard.toUri())),
-//                            musicList[position].id)
-                        val audioCollection = sdk29AndUp {
-                            MediaStore.Audio.Media.getContentUri(MediaStore.getExternalVolumeNames(context).toList()[1])
-                        } ?: MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
+                    val currentFile = File(musicList[position].path)
+                    val newName = bindingRF.renameField.text.toString().replace(".${currentFile.extension}","")
+                    val newFile = File(currentFile.parentFile, newName.toString()+"."+currentFile.extension)
+                    val parentDir = File(currentFile.parentFile!!.toURI())
 
-                        Log.d("CLEAR","collection ${MediaStore.getExternalVolumeNames(context)}")
-                        val fromUri = Uri.withAppendedPath(audioCollection,
-                            musicList[position].id)
-                        Log.d("CLEAR","fromUri ${fromUri.path}")
-                        val contentValues =ContentValues().apply {
-                            put(MediaStore.Audio.Media.DISPLAY_NAME,"$newName.mp3")
-                        }
+                    Log.d("CLEAR","parent: $parentDir")
+                    if(currentFile.exists() && newName.toString().isNotEmpty()){
                         try {
-                            context.contentResolver.update(audioCollection, contentValues,null,null)
-                            updateRenameUI(position, newName = newName, newFile = newFile)
-                        }catch (e: IOException){
+                            val fromUri = Uri.withAppendedPath(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                                musicList[position].id)
+
+                            ContentValues().also {
+                                it.put(MediaStore.Audio.Media.IS_PENDING, 1)
+                                context.contentResolver.update(fromUri, it, null, null)
+                                it.clear()
+
+                                //updating file details
+                                it.put(MediaStore.Audio.Media.DISPLAY_NAME, newName.toString())
+                                it.put(MediaStore.Audio.Media.IS_PENDING, 0)
+                                context.contentResolver.update(fromUri, it, null, null)
+                                updateRenameUI(position, newName = "$newName.${currentFile.extension}", newFile = newFile)
+                            }
+                        }catch (e: IllegalArgumentException){
                             e.printStackTrace()
-                        }
-//                        ContentValues().also {
-////                            it.put(MediaStore.Files.FileColumns.IS_PENDING, 1)
-////                            context.contentResolver.update(fromUri, it, null, null)
-////                            it.clear()
+                            try {
+                                renamePosition = position
+                                finalNewName = "$newName.${currentFile.extension}"
+                                val permittedStorage = appPref.getString(AppPref.PERMITTED_AUDIO_STORAGE).toString()
+                                val directories = permittedStorage.split("#@#")
+                                for (directory in directories){
+                                    if (directories.isNotEmpty()){
+                                        val uri = directory.split("@#@")
+                                        Log.d("CLEAR","uri: ${uri[0]} parent: $parentDir")
+                                        if (uri[0] == parentDir.toString()){
+                                            renameUsingSAF(Uri.parse(uri[1]))
+                                            return@setPositiveButton
+                                        }
+                                    }
+                                }
+                                val builder =
+                                    MaterialAlertDialogBuilder(context, R.style.alertDialog)
+                                        .setTitle("Rename External Storage File")
+                                        .setMessage("${musicList[position].title}\n\nTo Rename the Files from External SdCard Directory. Select the Directory in which the file is located")
+                                        .setPositiveButton("Ok") { _, _ ->
+                                            val intent =
+                                                Intent(Intent.ACTION_OPEN_DOCUMENT_TREE).apply {
+                                                    // Optionally, specify a URI for the directory that should be opened in
+                                                    // the system file picker when it loads.
+                                                    putExtra(DocumentsContract.EXTRA_INITIAL_URI,
+                                                        parentDir)
+                                                }
+                                            context.startActivityForResult(intent, 23)
+                                            self.dismiss()
+                                        }
+                                        .setNegativeButton("Cancel") { _, _ -> self.dismiss() }
+                                val delDialog = builder.create()
+                                delDialog.show()
+                                delDialog.getButton(android.app.AlertDialog.BUTTON_POSITIVE)
+                                    .setTextColor(Color.BLACK)
+                                delDialog.getButton(android.app.AlertDialog.BUTTON_NEGATIVE)
+                                    .setTextColor(Color.BLACK)
+//                                val manager: StorageManager = getSystemService(context,StorageManager::class.java)!!
+//                                val primaryStorageVolume = manager.storageVolumes[1]
+//                                context.startActivityForResult(primaryStorageVolume.createOpenDocumentTreeIntent(),23)
+//                                val fromUri = Uri.withAppendedPath(MediaStore.Audio.Media.getContentUri(MediaStore.getExternalVolumeNames(context).toList()[1]),
+//                                    musicList[position].id)
+//                                ContentValues().also {
+//                                    it.put(MediaStore.Audio.Media.IS_PENDING, 1)
+//                                    context.contentResolver.update(fromUri, it, null, null)
+//                                    it.clear()
 //
-////                            updating file details
-//                            it.put(MediaStore.Files.FileColumns.DISPLAY_NAME, newName)
-////                            it.put(MediaStore.Files.FileColumns.IS_PENDING, 0)
-//                            context.contentResolver.update(fromUri, it, null, null)
-//                            updateRenameUI(position, newName = newName, newFile = newFile)
-//                        }
-                    }catch (e: IllegalArgumentException){
-                        val currentFile = File(musicList[position].path)
-                        val newName = bindingRF.renameField.text.toString().replace(".${currentFile.extension}","")
-                        if(currentFile.exists() && newName.isNotEmpty()){
-                            Log.d("CLEAR","file")
-                            val newFile = File(currentFile.parentFile, newName+"."+currentFile.extension)
-                            if(currentFile.renameTo(newFile)){
-                                MediaScannerConnection.scanFile(context, arrayOf(newFile.toString()), arrayOf("audio/*"), null)
-                                updateRenameUI(position, newName = newName, newFile = newFile)
-                            }else{
-                                Log.d("CLEAR","file not rename")
+//                                    //updating file details
+//                                    it.put(MediaStore.Audio.Media.DISPLAY_NAME, newName.toString())
+//                                    it.put(MediaStore.Audio.Media.IS_PENDING, 0)
+//                                    context.contentResolver.update(fromUri, it, null, null)
+//                                    updateRenameUI(position,
+//                                        newName = "$newName.${currentFile.extension}",
+//                                        newFile = newFile)
+//                                }
+//                                if(Environment.isExternalStorageManager()){
+//
+//                                }else{
+//                                    val builder = MaterialAlertDialogBuilder(context,R.style.alertDialog)
+//                                        .setTitle("Rename External Storage File")
+//                                        .setMessage("${musicList[position].displayName}\n\nTo Rename the Files from External SdCard Directory. It requires All Files access from the App settings")
+//                                        .setPositiveButton("Ok"){ _, _ ->
+//                                            val intent = Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION)
+//                                            intent.addCategory("android.intent.category.DEFAULT")
+//                                            intent.data = Uri.parse("package:${context.applicationContext.packageName}")
+//                                            ContextCompat.startActivity(context, intent, null)
+//                                            self.dismiss()
+//                                        }
+//                                        .setNegativeButton("Cancel"){ _, _ -> self.dismiss() }
+//                                    val delDialog = builder.create()
+//                                    //            delDialog.window?.setBackgroundDrawable(ColorDrawable(R.color.white))
+//                                    delDialog.show()
+//                                    delDialog.getButton(android.app.AlertDialog.BUTTON_POSITIVE).setTextColor(Color.BLACK)
+//                                    delDialog.getButton(android.app.AlertDialog.BUTTON_NEGATIVE).setTextColor(Color.BLACK)
+//                                }
+                            }catch (e: Exception){
+                                e.printStackTrace()
                             }
                         }
-                        Log.d("CLEAR","error ${e.printStackTrace()}")
-                        e.printStackTrace()
                     }
                     self.dismiss()
                 }
@@ -271,13 +326,15 @@ class MusicAdapter(private val context: Context, private var musicList: ArrayLis
                 .setCancelable(false)
                 .setPositiveButton("Rename"){ self, _ ->
                     val currentFile = File(musicList[position].path)
+                    val parentDir = File(currentFile.parentFile!!.toURI())
+                    Log.d("CLEAR","dir: $parentDir")
                     val newName = bindingRF.renameField.text.toString().replace(".${currentFile.extension}","")
                     try {
                         if(currentFile.exists() && newName.isNotEmpty()){
                             val newFile = File(currentFile.parentFile, newName+"."+currentFile.extension)
                             if(currentFile.renameTo(newFile)){
                                 MediaScannerConnection.scanFile(context, arrayOf(newFile.toString()), arrayOf("audio/*"), null)
-                                updateRenameUI(position, newName = newName, newFile = newFile)
+                                updateRenameUI(position, "$newName.${currentFile.extension}", newFile = newFile)
                             }
                         }
                     }catch (e: Exception){
@@ -327,19 +384,36 @@ class MusicAdapter(private val context: Context, private var musicList: ArrayLis
         audioActivity.overridePendingTransition(R.anim.slide_in_top,R.anim.slide_out_bottom)
     }
 
-    fun onResult(requestCode: Int, resultCode: Int){
+    fun onResult(requestCode: Int, resultCode: Int, data: Intent?){
         if(resultCode == Activity.RESULT_OK && requestCode == 123) updateDeleteUI(newPosition)
+        if(resultCode == Activity.RESULT_OK && requestCode == 23) {
+            val treeUri = data!!.data!!
+            context.contentResolver.takePersistableUriPermission(treeUri,Intent.FLAG_GRANT_WRITE_URI_PERMISSION or Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            val currentFile = File(musicList[renamePosition].path)
+            val parentDir = File(currentFile.parentFile!!.toURI())
+            var permittedStorage = appPref.getString(AppPref.PERMITTED_AUDIO_STORAGE).toString()
+            permittedStorage += "$parentDir@#@$treeUri#@#"
+            Log.d("CLEAR","treeUri|| $treeUri")
+            appPref.setString(AppPref.PERMITTED_AUDIO_STORAGE,permittedStorage)
+            renameUsingSAF(treeUri)
+        }
+    }
+
+    private fun renameUsingSAF(treeUri: Uri){
+        val currentFile = File(musicList[renamePosition].path)
+        val fileDoc = DocumentFile.fromTreeUri(context,treeUri)
+        for (file in fileDoc!!.listFiles()){
+            if (file.name.equals(currentFile.name)){
+                if (file.renameTo(finalNewName)){
+                    updateRenameUI(renamePosition, newName = finalNewName, newFile = File(file.uri.path!!))
+                }else{
+                    Log.d("CLEAR","not")
+                }
+            }
+        }
     }
 
     fun renameResult(){
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            if(!Environment.isExternalStorageManager()){
-                val intent = Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION)
-                intent.addCategory("android.intent.category.DEFAULT")
-                intent.data = Uri.parse("package:${context.applicationContext.packageName}")
-                ContextCompat.startActivity(context, intent, null)
-            }
-        }
         renameFunction(newPosition)
     }
 

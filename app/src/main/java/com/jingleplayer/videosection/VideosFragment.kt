@@ -12,6 +12,7 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.jingleplayer.R
+import com.jingleplayer.audiosection.AudioActivity
 import com.jingleplayer.databinding.FragmentVideosBinding
 
 class VideosFragment : Fragment() {
@@ -65,21 +66,23 @@ class VideosFragment : Fragment() {
                         if(video.title.lowercase().contains(binding.search.text.toString().lowercase()))
                             VideoActivity.searchList.add(video)
                     }
-                    VideoActivity.search = true
-                    adapter.updateList(searchList = VideoActivity.searchList)
+                    VideoActivity.videoList = VideoActivity.searchList
+                    adapter.updateList(searchList = VideoActivity.videoList)
                 }else{
+                    VideoActivity.videoList = getAllVideos(requireContext())
                     adapter.updateList(VideoActivity.videoList)
                 }
                 binding.search.addTextChangedListener(this)
             }
         })
 
-        binding.root.setOnRefreshListener {
+        binding.srlRoot.setOnRefreshListener {
             VideoActivity.videoList = getAllVideos(requireContext())
             if (binding.search.text?.isNotEmpty() == true){
                 adapter.updateList(searchList = VideoActivity.searchList)
             }else{
-                adapter.updateList(getAllVideos(requireContext()))
+                VideoActivity.videoList = getAllVideos(requireContext())
+                adapter.updateList(VideoActivity.videoList)
             }
             binding.root.isRefreshing = false
         }
@@ -96,6 +99,10 @@ class VideosFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         if(VideoPlayerActivity.position != -1) binding.nowPlayingBtn.visibility = View.VISIBLE
+//        if(spinnerIndex>=0){
+//            VideoActivity.sortValue = spinnerIndex
+//            adapter.updateList(getAllVideos(requireContext()))
+//        }
     }
 
 }

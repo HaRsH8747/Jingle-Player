@@ -38,10 +38,11 @@
 
             <ImageView
                 android:id="@+id/back"
-                android:layout_width="35dp"
-                android:layout_height="30dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
                 android:layout_marginTop="20dp"
+                android:contentDescription="@string/back_button"
                 android:src="@drawable/arrow_back"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -61,9 +62,10 @@
 
             <ImageView
                 android:id="@+id/ivFavourites"
-                android:layout_width="35dp"
-                android:layout_height="35dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
+                android:contentDescription="@string/favourite_items"
                 android:layout_marginEnd="10dp"
                 android:src="@drawable/favourite_icon"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -108,7 +110,9 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/guideline3"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:importantForAutofill="no"
+                    android:inputType="text" />
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/relativeLayout"
@@ -143,6 +147,7 @@
                         android:layout_alignParentBottom="true"
                         android:layout_marginEnd="5dp"
                         android:src="@drawable/arrow_drop"
+                        android:contentDescription="@string/filter_options"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />

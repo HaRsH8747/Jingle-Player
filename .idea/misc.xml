@@ -7,8 +7,12 @@
         <entry key="..\:/Users/harshmoradiya/AndroidStudioProjects/JinglePlayer/app/src/main/res/drawable/a_forward_icon.xml" value="0.2335" />
         <entry key="..\:/Users/harshmoradiya/AndroidStudioProjects/JinglePlayer/app/src/main/res/drawable/add_icon.xml" value="0.2335" />
         <entry key="..\:/Users/harshmoradiya/AndroidStudioProjects/JinglePlayer/app/src/main/res/drawable/add_link_icon.xml" value="0.2335" />
+        <entry key="..\:/Users/harshmoradiya/AndroidStudioProjects/JinglePlayer/app/src/main/res/drawable/arrow_back.xml" value="0.249" />
+        <entry key="..\:/Users/harshmoradiya/AndroidStudioProjects/JinglePlayer/app/src/main/res/drawable/back_icon.xml" value="0.249" />
         <entry key="..\:/Users/harshmoradiya/AndroidStudioProjects/JinglePlayer/app/src/main/res/drawable/backward_icon.xml" value="0.2335" />
         <entry key="..\:/Users/harshmoradiya/AndroidStudioProjects/JinglePlayer/app/src/main/res/drawable/brightness_icon.xml" value="0.2335" />
+        <entry key="..\:/Users/harshmoradiya/AndroidStudioProjects/JinglePlayer/app/src/main/res/drawable/favourite_empty_icon.xml" value="0.249" />
+        <entry key="..\:/Users/harshmoradiya/AndroidStudioProjects/JinglePlayer/app/src/main/res/drawable/favourite_icon.xml" value="0.249" />
         <entry key="..\:/Users/harshmoradiya/AndroidStudioProjects/JinglePlayer/app/src/main/res/drawable/ic_launcher_background.xml" value="0.121" />
         <entry key="..\:/Users/harshmoradiya/AndroidStudioProjects/JinglePlayer/app/src/main/res/drawable/ic_mute.xml" value="0.249" />
         <entry key="..\:/Users/harshmoradiya/AndroidStudioProjects/JinglePlayer/app/src/main/res/drawable/ic_splash_logo.xml" value="0.2335" />
@@ -20,26 +24,31 @@
         <entry key="..\:/Users/harshmoradiya/AndroidStudioProjects/JinglePlayer/app/src/main/res/layout/activity_about.xml" value="0.25" />
         <entry key="..\:/Users/harshmoradiya/AndroidStudioProjects/JinglePlayer/app/src/main/res/layout/activity_audio.xml" value="0.264" />
         <entry key="..\:/Users/harshmoradiya/AndroidStudioProjects/JinglePlayer/app/src/main/res/layout/activity_audio_player.xml" value="0.264" />
-        <entry key="..\:/Users/harshmoradiya/AndroidStudioProjects/JinglePlayer/app/src/main/res/layout/activity_favourite.xml" value="0.10989583333333333" />
+        <entry key="..\:/Users/harshmoradiya/AndroidStudioProjects/JinglePlayer/app/src/main/res/layout/activity_favourite.xml" value="0.2" />
         <entry key="..\:/Users/harshmoradiya/AndroidStudioProjects/JinglePlayer/app/src/main/res/layout/activity_feedback.xml" value="0.10989583333333333" />
-        <entry key="..\:/Users/harshmoradiya/AndroidStudioProjects/JinglePlayer/app/src/main/res/layout/activity_folders.xml" value="0.10989583333333333" />
+        <entry key="..\:/Users/harshmoradiya/AndroidStudioProjects/JinglePlayer/app/src/main/res/layout/activity_folders.xml" value="0.2" />
         <entry key="..\:/Users/harshmoradiya/AndroidStudioProjects/JinglePlayer/app/src/main/res/layout/activity_home.xml" value="0.25" />
         <entry key="..\:/Users/harshmoradiya/AndroidStudioProjects/JinglePlayer/app/src/main/res/layout/activity_play_next.xml" value="0.25" />
         <entry key="..\:/Users/harshmoradiya/AndroidStudioProjects/JinglePlayer/app/src/main/res/layout/activity_playlist_details.xml" value="0.10989583333333333" />
         <entry key="..\:/Users/harshmoradiya/AndroidStudioProjects/JinglePlayer/app/src/main/res/layout/activity_settings.xml" value="0.10989583333333333" />
-        <entry key="..\:/Users/harshmoradiya/AndroidStudioProjects/JinglePlayer/app/src/main/res/layout/activity_video.xml" value="0.10989583333333333" />
+        <entry key="..\:/Users/harshmoradiya/AndroidStudioProjects/JinglePlayer/app/src/main/res/layout/activity_video.xml" value="0.264" />
         <entry key="..\:/Users/harshmoradiya/AndroidStudioProjects/JinglePlayer/app/src/main/res/layout/activity_video_player.xml" value="0.264" />
+        <entry key="..\:/Users/harshmoradiya/AndroidStudioProjects/JinglePlayer/app/src/main/res/layout/add_playlist_dialog.xml" value="0.25" />
         <entry key="..\:/Users/harshmoradiya/AndroidStudioProjects/JinglePlayer/app/src/main/res/layout/audio_booster.xml" value="0.25" />
         <entry key="..\:/Users/harshmoradiya/AndroidStudioProjects/JinglePlayer/app/src/main/res/layout/audio_more_features.xml" value="0.25" />
         <entry key="..\:/Users/harshmoradiya/AndroidStudioProjects/JinglePlayer/app/src/main/res/layout/booster.xml" value="0.10989583333333333" />
+        <entry key="..\:/Users/harshmoradiya/AndroidStudioProjects/JinglePlayer/app/src/main/res/layout/bottom_sheet_dialog.xml" value="0.25" />
         <entry key="..\:/Users/harshmoradiya/AndroidStudioProjects/JinglePlayer/app/src/main/res/layout/custom_control_view.xml" value="0.25" />
         <entry key="..\:/Users/harshmoradiya/AndroidStudioProjects/JinglePlayer/app/src/main/res/layout/custom_spinner_drop_down.xml" value="0.25" />
         <entry key="..\:/Users/harshmoradiya/AndroidStudioProjects/JinglePlayer/app/src/main/res/layout/details_view.xml" value="0.25" />
-        <entry key="..\:/Users/harshmoradiya/AndroidStudioProjects/JinglePlayer/app/src/main/res/layout/fragment_folders.xml" value="0.10989583333333333" />
+        <entry key="..\:/Users/harshmoradiya/AndroidStudioProjects/JinglePlayer/app/src/main/res/layout/favourite_view.xml" value="0.25" />
+        <entry key="..\:/Users/harshmoradiya/AndroidStudioProjects/JinglePlayer/app/src/main/res/layout/folders_view.xml" value="0.25" />
+        <entry key="..\:/Users/harshmoradiya/AndroidStudioProjects/JinglePlayer/app/src/main/res/layout/fragment_folders.xml" value="0.264" />
         <entry key="..\:/Users/harshmoradiya/AndroidStudioProjects/JinglePlayer/app/src/main/res/layout/fragment_now_playing.xml" value="0.25" />
-        <entry key="..\:/Users/harshmoradiya/AndroidStudioProjects/JinglePlayer/app/src/main/res/layout/fragment_videos.xml" value="0.10989583333333333" />
+        <entry key="..\:/Users/harshmoradiya/AndroidStudioProjects/JinglePlayer/app/src/main/res/layout/fragment_videos.xml" value="0.264" />
         <entry key="..\:/Users/harshmoradiya/AndroidStudioProjects/JinglePlayer/app/src/main/res/layout/music_view.xml" value="0.264" />
         <entry key="..\:/Users/harshmoradiya/AndroidStudioProjects/JinglePlayer/app/src/main/res/layout/nav_header.xml" value="0.10989583333333333" />
+        <entry key="..\:/Users/harshmoradiya/AndroidStudioProjects/JinglePlayer/app/src/main/res/layout/rename_field.xml" value="0.25" />
         <entry key="..\:/Users/harshmoradiya/AndroidStudioProjects/JinglePlayer/app/src/main/res/layout/speed_dialog.xml" value="0.25" />
         <entry key="..\:/Users/harshmoradiya/AndroidStudioProjects/JinglePlayer/app/src/main/res/layout/spinner_item.xml" value="0.25" />
         <entry key="..\:/Users/harshmoradiya/AndroidStudioProjects/JinglePlayer/app/src/main/res/layout/video_more_features.xml" value="0.25" />
